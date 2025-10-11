@@ -9,7 +9,7 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
-    "@vritti/quantum-ui": "file:.yalc/@vritti/quantum-ui",
+    "@vritti/quantum-ui": "0.1.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
