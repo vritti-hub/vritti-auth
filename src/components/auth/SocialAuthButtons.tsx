@@ -54,11 +54,26 @@ export const SocialAuthButtons: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <SocialButton provider="google" onClick={() => handleSocialLogin('google')} />
-      <SocialButton provider="microsoft" onClick={() => handleSocialLogin('microsoft')} />
-      <SocialButton provider="apple" onClick={() => handleSocialLogin('apple')} />
-      <SocialButton provider="linkedin" onClick={() => handleSocialLogin('linkedin')} />
+    <div className="space-y-2">
+      {/* Row 1: Google and Microsoft */}
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SocialButton provider="google" onClick={() => handleSocialLogin('google')} />
+        </div>
+        <div className="flex-1">
+          <SocialButton provider="microsoft" onClick={() => handleSocialLogin('microsoft')} />
+        </div>
+      </div>
+
+      {/* Row 2: Apple and LinkedIn */}
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SocialButton provider="apple" onClick={() => handleSocialLogin('apple')} />
+        </div>
+        <div className="flex-1">
+          <SocialButton provider="linkedin" onClick={() => handleSocialLogin('linkedin')} />
+        </div>
+      </div>
     </div>
   );
 };

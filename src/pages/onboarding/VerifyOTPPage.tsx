@@ -1,10 +1,10 @@
 import { Button } from '@vritti/quantum-ui/Button';
 import { Typography } from '@vritti/quantum-ui/Typography';
+import { OTPField } from '@vritti/quantum-ui/OTPField';
+import { Progress } from '@vritti/quantum-ui/Progress';
 import { Smartphone } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OTPInput } from '../../components/onboarding/OTPInput';
-import { ProgressIndicator } from '../../components/onboarding/ProgressIndicator';
 
 export const VerifyOTPPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export const VerifyOTPPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <ProgressIndicator currentStep={2} />
+      <Progress value={(2 / 6) * 100} />
 
       <div className="text-center space-y-2">
         <Typography variant="h3" align="center" className="text-foreground">
@@ -58,18 +58,12 @@ export const VerifyOTPPage: React.FC = () => {
           <Smartphone className="h-8 w-8 text-primary" />
         </div>
 
-        <div className="space-y-2">
-          <OTPInput value={otp} onChange={setOtp} error={!!error} />
-          {error && (
-            <Typography variant="body2" className="text-destructive text-center text-xs">
-              {error}
-            </Typography>
-          )}
-        </div>
-
-        <Typography variant="body2" align="center" intent="muted" className="text-center">
-          Enter the 6-digit code sent via SMS
-        </Typography>
+        <OTPField
+          value={otp}
+          onChange={setOtp}
+          error={!!error}
+          message={error || 'Enter the 6-digit code sent via SMS'}
+        />
 
         <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={isLoading}>
           {isLoading ? 'Verifying...' : 'Verify & Continue'}

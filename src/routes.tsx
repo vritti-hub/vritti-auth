@@ -1,19 +1,23 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { AuthProvider } from '@vritti/quantum-ui/AuthProvider';
 import { AuthLayout } from './components/layouts/AuthLayout';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
-import { EnterMobilePage } from './pages/onboarding/EnterMobilePage';
-import { MFASelectionPage } from './pages/onboarding/MFASelectionPage';
+import { MFASetupFlowPage } from './pages/onboarding/MFASetupFlowPage';
 import { SetPasswordPage } from './pages/onboarding/SetPasswordPage';
-import { SetupAuthenticatorPage } from './pages/onboarding/SetupAuthenticatorPage';
-import { SetupPasskeyPage } from './pages/onboarding/SetupPasskeyPage';
+import { VerifyEmailPage } from './pages/onboarding/VerifyEmailPage';
+import { VerifyMobileFlowPage } from './pages/onboarding/VerifyMobileFlowPage';
 import { VerifyOTPPage } from './pages/onboarding/VerifyOTPPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <AuthLayout />,
+    element: (
+      <AuthProvider>
+        <AuthLayout />
+      </AuthProvider>
+    ),
     children: [
       {
         index: true,
@@ -35,8 +39,12 @@ export const router = createBrowserRouter([
         path: 'onboarding',
         children: [
           {
-            path: 'mobile',
-            element: <EnterMobilePage />,
+            path: 'verify-email',
+            element: <VerifyEmailPage />,
+          },
+          {
+            path: 'verify-mobile',
+            element: <VerifyMobileFlowPage />,
           },
           {
             path: 'verify-otp',
@@ -47,16 +55,8 @@ export const router = createBrowserRouter([
             element: <SetPasswordPage />,
           },
           {
-            path: 'mfa-selection',
-            element: <MFASelectionPage />,
-          },
-          {
-            path: 'setup-authenticator',
-            element: <SetupAuthenticatorPage />,
-          },
-          {
-            path: 'setup-passkey',
-            element: <SetupPasskeyPage />,
+            path: 'mfa-setup',
+            element: <MFASetupFlowPage />,
           },
         ],
       },

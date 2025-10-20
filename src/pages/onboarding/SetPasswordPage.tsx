@@ -1,10 +1,10 @@
 import { Button } from '@vritti/quantum-ui/Button';
 import { PasswordField } from '@vritti/quantum-ui/PasswordField';
 import { Typography } from '@vritti/quantum-ui/Typography';
+import { Progress } from '@vritti/quantum-ui/Progress';
 import { Check, Lock } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ProgressIndicator } from '../../components/onboarding/ProgressIndicator';
 
 export const SetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ export const SetPasswordPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <ProgressIndicator currentStep={3} />
+      <Progress value={(3 / 6) * 100} />
 
       <div className="text-center space-y-2">
         <Typography variant="h3" align="center" className="text-foreground">

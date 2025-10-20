@@ -19,6 +19,8 @@
   --accent-foreground: oklch(0.3791 0.1378 265.5222);
   --destructive: oklch(0.6368 0.2078 25.3313);
   --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.654 0.181 150.57);
+  --success-foreground: oklch(1 0 0);
   --border: oklch(0.9276 0.0058 264.5313);
   --input: oklch(0.9276 0.0058 264.5313);
   --ring: oklch(0.6231 0.188 259.8145);
@@ -69,6 +71,8 @@
   --accent-foreground: oklch(0.8823 0.0571 254.1284);
   --destructive: oklch(0.6368 0.2078 25.3313);
   --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.654 0.181 150.57);
+  --success-foreground: oklch(1 0 0);
   --border: oklch(0.4 0 0);
   --input: oklch(0.4 0 0);
   --ring: oklch(0.6231 0.188 259.8145);
@@ -113,4 +117,14 @@
   .outline-ring\/50 {
     outline: 2px solid rgb(var(--ring) / 0.5);
   }
+}
+
+/* PhoneInput flag sizing overrides for h-9 (36px) container */
+.PhoneInput {
+  --PhoneInputCountryFlag-height: 1rem;
+}
+
+.PhoneInputCountryIcon {
+  max-width: 24px;
+  max-height: 16px;
 }
