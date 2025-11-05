@@ -4,12 +4,12 @@ import { TextField } from '@vritti/quantum-ui/TextField';
 import { Typography } from '@vritti/quantum-ui/Typography';
 import { Lock, Mail, User } from 'lucide-react';
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthDivider } from '../../components/auth/AuthDivider';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 
 export const SignupPage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

@@ -1,33 +1,57 @@
 import { Button } from '@vritti/quantum-ui/Button';
-import { Apple, Chrome, Linkedin } from 'lucide-react';
 import React from 'react';
+import { AppleIcon } from '../icons/AppleIcon';
+import { FacebookIcon } from '../icons/FacebookIcon';
+import { GoogleIcon } from '../icons/GoogleIcon';
+import { MicrosoftIcon } from '../icons/MicrosoftIcon';
+import { XIcon } from '../icons/XIcon';
 
 interface SocialButtonProps {
-  provider: 'google' | 'microsoft' | 'apple' | 'linkedin';
+  provider: 'google' | 'x' | 'facebook' | 'apple' | 'microsoft';
   onClick?: () => void;
 }
 
 const SocialButton: React.FC<SocialButtonProps> = ({ provider, onClick }) => {
   const providerConfig = {
     google: {
-      icon: <Chrome className="h-4 w-4" />,
+      icon: <GoogleIcon className="h-6 w-6" />,
       label: 'Google',
+      bgColor: 'bg-[#F2F2F2] dark:bg-gray-800',
+      hoverColor: 'hover:bg-[#E8E8E8] dark:hover:bg-gray-700',
+      textColor: 'text-gray-800 dark:text-gray-200',
+      borderColor: 'border-transparent',
     },
-    microsoft: {
-      icon: (
-        <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M0 0h7.5v7.5H0V0zm8.5 0H16v7.5H8.5V0zM0 8.5h7.5V16H0V8.5zm8.5 0H16V16H8.5V8.5z" />
-        </svg>
-      ),
-      label: 'Microsoft',
+    facebook: {
+      icon: <FacebookIcon className="h-6 w-6" />,
+      label: 'Facebook',
+      bgColor: 'bg-[#1877F2]',
+      hoverColor: 'hover:bg-[#0C63D4]',
+      textColor: 'text-white',
+      borderColor: 'border-transparent',
+    },
+    x: {
+      icon: <XIcon className="h-6 w-6 text-white dark:text-black" />,
+      label: 'X',
+      bgColor: 'bg-black dark:bg-white',
+      hoverColor: 'hover:bg-gray-900 dark:hover:bg-gray-100',
+      textColor: 'text-white dark:text-black',
+      borderColor: 'border-transparent',
     },
     apple: {
-      icon: <Apple className="h-4 w-4" />,
+      icon: <AppleIcon className="h-6 w-6 text-white dark:text-black" />,
       label: 'Apple',
+      bgColor: 'bg-black dark:bg-white',
+      hoverColor: 'hover:bg-gray-900 dark:hover:bg-gray-100',
+      textColor: 'text-white dark:text-black',
+      borderColor: 'border-transparent',
     },
-    linkedin: {
-      icon: <Linkedin className="h-4 w-4" />,
-      label: 'LinkedIn',
+    microsoft: {
+      icon: <MicrosoftIcon className="h-6 w-6" />,
+      label: 'Microsoft',
+      bgColor: 'bg-[#F2F2F2] dark:bg-gray-800',
+      hoverColor: 'hover:bg-[#E8E8E8] dark:hover:bg-gray-700',
+      textColor: 'text-gray-800 dark:text-gray-200',
+      borderColor: 'border-transparent',
     },
   };
 
@@ -36,13 +60,11 @@ const SocialButton: React.FC<SocialButtonProps> = ({ provider, onClick }) => {
   return (
     <Button
       variant="outline"
-      className="w-full bg-secondary text-foreground border-border hover:bg-secondary/80"
+      className={`w-12 h-12 p-0 flex items-center justify-center ${config.bgColor} ${config.hoverColor} ${config.textColor} ${config.borderColor} transition-colors`}
       onClick={onClick}
+      aria-label={`Sign in with ${config.label}`}
     >
-      <span className="flex items-center justify-center gap-2">
-        {config.icon}
-        <span className="text-sm font-medium">{config.label}</span>
-      </span>
+      {config.icon}
     </Button>
   );
 };
@@ -54,26 +76,12 @@ export const SocialAuthButtons: React.FC = () => {
   };
 
   return (
-    <div className="space-y-2">
-      {/* Row 1: Google and Microsoft */}
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <SocialButton provider="google" onClick={() => handleSocialLogin('google')} />
-        </div>
-        <div className="flex-1">
-          <SocialButton provider="microsoft" onClick={() => handleSocialLogin('microsoft')} />
-        </div>
-      </div>
-
-      {/* Row 2: Apple and LinkedIn */}
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <SocialButton provider="apple" onClick={() => handleSocialLogin('apple')} />
-        </div>
-        <div className="flex-1">
-          <SocialButton provider="linkedin" onClick={() => handleSocialLogin('linkedin')} />
-        </div>
-      </div>
+    <div className="flex gap-3 w-full justify-center">
+      <SocialButton provider="google" onClick={() => handleSocialLogin('google')} />
+      <SocialButton provider="x" onClick={() => handleSocialLogin('x')} />
+      <SocialButton provider="facebook" onClick={() => handleSocialLogin('facebook')} />
+      <SocialButton provider="apple" onClick={() => handleSocialLogin('apple')} />
+      <SocialButton provider="microsoft" onClick={() => handleSocialLogin('microsoft')} />
     </div>
   );
 };
