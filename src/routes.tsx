@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 import { AuthProvider } from '@vritti/quantum-ui/AuthProvider';
 import { AuthLayout } from './components/layouts/AuthLayout';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
@@ -10,7 +11,11 @@ import { VerifyEmailPage } from './pages/onboarding/VerifyEmailPage';
 import { VerifyMobileFlowPage } from './pages/onboarding/VerifyMobileFlowPage';
 import { VerifyOTPPage } from './pages/onboarding/VerifyOTPPage';
 
-export const router = createBrowserRouter([
+/**
+ * Auth routes configuration - exported for Module Federation consumption
+ * This is used by the host application to merge auth routes
+ */
+export const authRoutes: RouteObject[] = [
   {
     path: '/',
     element: (
@@ -62,4 +67,10 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+/**
+ * Browser router instance for standalone auth app
+ * Used when running vritti-auth independently
+ */
+export const router = createBrowserRouter(authRoutes);
