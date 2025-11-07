@@ -58,11 +58,5 @@ export default defineConfig({
       dts: false, // Disable DTS generation to avoid issues with malformed type declarations
     }),
   ],
-  tools: {
-    postcss: (config) => {
-      config.postcssOptions = {
-        plugins: ["tailwindcss", "autoprefixer"],
-      };
-    },
-  },
+  // PostCSS configuration is in postcss.config.mjs
 });
