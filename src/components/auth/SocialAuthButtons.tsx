@@ -16,16 +16,16 @@ const SocialButton: React.FC<SocialButtonProps> = ({ provider, onClick }) => {
     google: {
       icon: <GoogleIcon className="h-6 w-6" />,
       label: 'Google',
-      bgColor: 'bg-[#F2F2F2] dark:bg-gray-800',
-      hoverColor: 'hover:bg-[#E8E8E8] dark:hover:bg-gray-700',
-      textColor: 'text-gray-800 dark:text-gray-200',
-      borderColor: 'border-transparent',
+      bgColor: 'bg-card',
+      hoverColor: 'hover:bg-secondary',
+      textColor: 'text-card-foreground',
+      borderColor: 'border-border',
     },
     facebook: {
       icon: <FacebookIcon className="h-6 w-6" />,
       label: 'Facebook',
-      bgColor: 'bg-[#1877F2]',
-      hoverColor: 'hover:bg-[#0C63D4]',
+      bgColor: 'bg-[var(--brand-facebook)]',
+      hoverColor: 'hover:bg-[var(--brand-facebook-hover)]',
       textColor: 'text-white',
       borderColor: 'border-transparent',
     },
@@ -48,10 +48,10 @@ const SocialButton: React.FC<SocialButtonProps> = ({ provider, onClick }) => {
     microsoft: {
       icon: <MicrosoftIcon className="h-6 w-6" />,
       label: 'Microsoft',
-      bgColor: 'bg-[#F2F2F2] dark:bg-gray-800',
-      hoverColor: 'hover:bg-[#E8E8E8] dark:hover:bg-gray-700',
-      textColor: 'text-gray-800 dark:text-gray-200',
-      borderColor: 'border-transparent',
+      bgColor: 'bg-secondary',
+      hoverColor: 'hover:bg-secondary/80',
+      textColor: 'text-secondary-foreground',
+      borderColor: 'border-border',
     },
   };
 
