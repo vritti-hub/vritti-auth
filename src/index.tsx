@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import '@vritti/quantum-ui/dist/assets/quantum-ui.css';
-import App from './App';
+import '@vritti/quantum-ui/index.css';
 import './index.css';
+import App from './App';
 const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
