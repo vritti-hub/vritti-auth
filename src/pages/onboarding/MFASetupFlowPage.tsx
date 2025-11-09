@@ -1,9 +1,15 @@
+import { Field, FieldGroup, FieldLabel, Form } from '@vritti/quantum-ui/Form';
 import { Button } from '@vritti/quantum-ui/Button';
-import { Typography } from '@vritti/quantum-ui/Typography';
 import { OTPField } from '@vritti/quantum-ui/OTPField';
+import { Typography } from '@vritti/quantum-ui/Typography';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, CheckCircle, KeyRound, Loader2, Smartphone } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import type { OTPFormData } from '../../schemas/auth';
+import { otpSchema } from '../../schemas/auth';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 import { MultiStepProgressIndicator } from '../../components/onboarding/MultiStepProgressIndicator';
 
 type MFAMethod = 'authenticator' | 'passkey' | null;
@@ -13,11 +19,15 @@ export const MFASetupFlowPage: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<FlowStep>(1);
   const [selectedMethod, setSelectedMethod] = useState<MFAMethod>(null);
-  const [otp, setOtp] = useState('');
-  const [otpError, setOtpError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const manualKey = 'JBSWY3DPEHPK3PXP';
+
+  const otpForm = useForm<OTPFormData>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      code: '',
+    },
+  });
 
   // TODO: Fetch onboarding progress from API on mount
   useEffect(() => {
@@ -67,22 +77,15 @@ export const MFASetupFlowPage: React.FC = () => {
   };
 
   const handleBack = () => {
+    otpForm.reset();
     setCurrentStep(1);
   };
 
-  const handleAuthenticatorSubmit = async () => {
-    if (otp.length !== 6) {
-      setOtpError('Please enter the complete verification code');
-      return;
-    }
-
-    setIsLoading(true);
-    setOtpError('');
-
+  const handleAuthenticatorSubmit = async (data: OTPFormData) => {
     try {
       // TODO: Verify OTP with API
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Authenticator verified with OTP:', otp);
+      console.log('Authenticator verified with OTP:', data.code);
 
       // TODO: Update API
       // await fetch('/api/onboarding/progress', {
@@ -93,14 +96,14 @@ export const MFASetupFlowPage: React.FC = () => {
       setCurrentStep(3);
     } catch (error) {
       console.error('Verification failed', error);
-      setOtpError('Invalid verification code. Please try again.');
-    } finally {
-      setIsLoading(false);
+      mapApiErrorsToForm(otpForm, error);
     }
   };
 
+  const [isCreatingPasskey, setIsCreatingPasskey] = useState(false);
+
   const handlePasskeySubmit = async () => {
-    setIsLoading(true);
+    setIsCreatingPasskey(true);
 
     try {
       // TODO: Implement WebAuthn passkey creation
@@ -117,7 +120,7 @@ export const MFASetupFlowPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to create passkey', error);
     } finally {
-      setIsLoading(false);
+      setIsCreatingPasskey(false);
     }
   };
 
@@ -220,71 +223,78 @@ export const MFASetupFlowPage: React.FC = () => {
   );
 
   // Step 2a: Setup Authenticator
-  const renderAuthenticatorStep = () => (
-    <div className="space-y-6">
-      <button
-        onClick={handleBack}
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to MFA options
-      </button>
-
-      <div className="text-center space-y-2">
-        <Typography variant="h3" align="center" className="text-foreground">
-          Setup Authenticator App
-        </Typography>
-        <Typography variant="body2" align="center" intent="muted">
-          Scan the QR code below
-        </Typography>
-      </div>
-
-      <div className="space-y-4">
-        {/* QR Code */}
-        <div className="flex justify-center">
-          <div className="w-[193px] h-[193px] border border-border rounded-lg p-4 bg-white">
-            <div className="w-[160px] h-[160px] bg-secondary rounded-lg flex items-center justify-center">
-              <Typography variant="body2" intent="muted" className="text-center">
-                QR Code
-                <br />
-                (160x160)
-              </Typography>
-            </div>
-          </div>
-        </div>
-
-        {/* Manual Key */}
-        <div className="p-4 bg-muted/50 border border-border rounded-lg space-y-2">
-          <Typography variant="body2" className="font-medium text-foreground">
-            Manual setup key:
-          </Typography>
-          <div className="px-3 py-2 bg-secondary border border-border rounded text-sm font-mono text-foreground">
-            {manualKey}
-          </div>
-        </div>
-
-        {/* OTP Input */}
-        <OTPField
-          label="Enter the 6-digit code from your app"
-          value={otp}
-          onChange={(value) => {
-            setOtp(value);
-            if (otpError) setOtpError('');
-          }}
-          error={!!otpError}
-          message={otpError}
-        />
-
-        <Button
-          onClick={handleAuthenticatorSubmit}
-          className="w-full bg-primary text-primary-foreground"
-          disabled={isLoading || otp.length !== 6}
+  const renderAuthenticatorStep = () => {
+    return (
+      <div className="space-y-6">
+        <button
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
-          {isLoading ? 'Verifying...' : 'Complete Setup'}
-        </Button>
+          <ArrowLeft className="h-4 w-4" />
+          Back to MFA options
+        </button>
+
+        <div className="text-center space-y-2">
+          <Typography variant="h3" align="center" className="text-foreground">
+            Setup Authenticator App
+          </Typography>
+          <Typography variant="body2" align="center" intent="muted">
+            Scan the QR code below
+          </Typography>
+        </div>
+
+        <Form form={otpForm} onSubmit={handleAuthenticatorSubmit}>
+          <FieldGroup>
+            {/* QR Code */}
+            <div className="flex justify-center">
+              <div className="w-[193px] h-[193px] border border-border rounded-lg p-4 bg-white">
+                <div className="w-[160px] h-[160px] bg-secondary rounded-lg flex items-center justify-center">
+                  <Typography variant="body2" intent="muted" className="text-center">
+                    QR Code
+                    <br />
+                    (160x160)
+                  </Typography>
+                </div>
+              </div>
+            </div>
+
+            {/* Manual Key */}
+            <div className="p-4 bg-muted/50 border border-border rounded-lg space-y-2">
+              <Typography variant="body2" className="font-medium text-foreground">
+                Manual setup key:
+              </Typography>
+              <div className="px-3 py-2 bg-secondary border border-border rounded text-sm font-mono text-foreground">
+                {manualKey}
+              </div>
+            </div>
+
+            {/* OTP Input */}
+            <Field>
+              <FieldLabel>Enter the 6-digit code from your app</FieldLabel>
+              <OTPField
+                name="code"
+                onChange={(value) => {
+                  if (value.length === 6) {
+                    otpForm.handleSubmit(handleAuthenticatorSubmit)();
+                  }
+                }}
+              />
+            </Field>
+
+            <Field>
+              <Button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground"
+                disabled={otpForm.formState.isSubmitting}
+              >
+                {otpForm.formState.isSubmitting ? 'Verifying...' : 'Complete Setup'}
+              </Button>
+            </Field>
+          </FieldGroup>
+        </Form>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Step 2b: Setup Passkey
   const renderPasskeyStep = () => (
@@ -330,9 +340,9 @@ export const MFASetupFlowPage: React.FC = () => {
         <Button
           onClick={handlePasskeySubmit}
           className="w-full bg-primary text-primary-foreground"
-          disabled={isLoading}
+          disabled={isCreatingPasskey}
         >
-          {isLoading ? 'Creating Passkey...' : 'Create Passkey'}
+          {isCreatingPasskey ? 'Creating Passkey...' : 'Create Passkey'}
         </Button>
       </div>
     </div>

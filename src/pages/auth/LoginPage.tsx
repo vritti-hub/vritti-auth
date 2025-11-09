@@ -1,65 +1,38 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@vritti/quantum-ui/Button';
+import { Field, FieldGroup, FieldLabel, Form } from '@vritti/quantum-ui/Form';
 import { PasswordField } from '@vritti/quantum-ui/PasswordField';
+import { TextField } from '@vritti/quantum-ui/TextField';
 import { Typography } from '@vritti/quantum-ui/Typography';
-import { Lock } from 'lucide-react';
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Lock, Mail } from 'lucide-react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { AuthDivider } from '../../components/auth/AuthDivider';
-import { EmailField } from '../../components/auth/EmailField';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import type { LoginFormData } from '../../schemas/auth';
+import { loginSchema } from '../../schemas/auth';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  // const navigate = useNavigate();
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setIsLoading(true);
-
+  const onSubmit = async (data: LoginFormData) => {
     try {
       // TODO: Implement API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Login successful', formData);
+      console.log('Login successful', data);
       // navigate('/dashboard');
     } catch (error) {
       console.error('Login failed', error);
-    } finally {
-      setIsLoading(false);
+      mapApiErrorsToForm(form, error);
     }
   };
 
@@ -76,38 +49,40 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        <EmailField
-          label='Email'
-          value={formData.email}
-          onChange={handleChange('email')}
-          error={!!errors.email}
-          message={errors.email}
-          required
-        />
-
-        <div className='space-y-2'>
-          <div className='flex items-center justify-between'>
-            <label className='text-sm font-medium text-foreground'>Password</label>
-            <Link to='/forgot-password' className='text-sm text-primary hover:text-primary/80'>
-              Forgot?
-            </Link>
-          </div>
-          <PasswordField
-            placeholder='Enter your password'
-            value={formData.password}
-            onChange={handleChange('password')}
-            error={!!errors.password}
-            message={errors.password}
-            startAdornment={<Lock className="h-3.5 w-3.5 text-muted-foreground" />}
-            required
+      <Form form={form} onSubmit={onSubmit}>
+        <FieldGroup>
+          <TextField
+            name='email'
+            label='Email'
+            placeholder='Enter your email'
+            startAdornment={<Mail className='h-4 w-4 text-muted-foreground' />}
           />
-        </div>
 
-        <Button type='submit' className='w-full bg-primary text-primary-foreground' disabled={isLoading}>
-          {isLoading ? 'Signing in...' : 'Sign In'}
-        </Button>
-      </form>
+          <Field>
+            <div className='flex items-center justify-between'>
+              <FieldLabel>Password</FieldLabel>
+              <Link to='/forgot-password' className='text-sm text-primary hover:text-primary/80'>
+                Forgot?
+              </Link>
+            </div>
+            <PasswordField
+              name='password'
+              placeholder='Enter your password'
+              startAdornment={<Lock className='h-3.5 w-3.5 text-muted-foreground' />}
+            />
+          </Field>
+
+          <Field>
+            <Button
+              type='submit'
+              className='w-full bg-primary text-primary-foreground'
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </Field>
+        </FieldGroup>
+      </Form>
 
       {/* Divider */}
       <AuthDivider />

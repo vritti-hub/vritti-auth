@@ -1,49 +1,38 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Field, FieldGroup, Form } from '@vritti/quantum-ui/Form';
 import { Button } from '@vritti/quantum-ui/Button';
+import { TextField } from '@vritti/quantum-ui/TextField';
 import { Typography } from '@vritti/quantum-ui/Typography';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { EmailField } from '../../components/auth/EmailField';
+import type { ForgotPasswordFormData } from '../../schemas/auth';
+import { forgotPasswordSchema } from '../../schemas/auth';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
-  const validateEmail = () => {
-    if (!email.trim()) {
-      return 'Email is required';
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return 'Please enter a valid email address';
-    }
-    return '';
-  };
+  const form = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const validationError = validateEmail();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
       // TODO: Implement API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Password reset email sent to:', email);
+      console.log('Password reset email sent to:', data.email);
+      setSubmittedEmail(data.email);
       setIsSuccess(true);
     } catch (error) {
       console.error('Failed to send reset email', error);
-      setError('Failed to send reset email. Please try again.');
-    } finally {
-      setIsLoading(false);
+      mapApiErrorsToForm(form, error);
     }
   };
 
@@ -58,7 +47,7 @@ export const ForgotPasswordPage: React.FC = () => {
             We've sent a password reset link to
           </Typography>
           <Typography variant='body2' align='center' className='text-foreground font-medium'>
-            {email}
+            {submittedEmail}
           </Typography>
         </div>
 
@@ -69,7 +58,10 @@ export const ForgotPasswordPage: React.FC = () => {
           <Button
             variant='outline'
             className='w-full border-border text-foreground'
-            onClick={() => setIsSuccess(false)}
+            onClick={() => {
+              setIsSuccess(false);
+              form.reset();
+            }}
           >
             Try another email
           </Button>
@@ -105,23 +97,26 @@ export const ForgotPasswordPage: React.FC = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        <EmailField
-          label='Email Address'
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (error) setError('');
-          }}
-          error={!!error}
-          message={error}
-          required
-        />
+      <Form form={form} onSubmit={onSubmit}>
+        <FieldGroup>
+          <TextField
+            name='email'
+            label='Email Address'
+            placeholder='Enter your email'
+            startAdornment={<Mail className='h-4 w-4 text-muted-foreground' />}
+          />
 
-        <Button type='submit' className='w-full bg-primary text-primary-foreground' disabled={isLoading}>
-          {isLoading ? 'Sending reset link...' : 'Send reset link'}
-        </Button>
-      </form>
+          <Field>
+            <Button
+              type='submit'
+              className='w-full bg-primary text-primary-foreground'
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Sending reset link...' : 'Send reset link'}
+            </Button>
+          </Field>
+        </FieldGroup>
+      </Form>
     </div>
   );
 };

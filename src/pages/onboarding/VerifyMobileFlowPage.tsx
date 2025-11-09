@@ -1,10 +1,16 @@
+import { Field, FieldGroup, FieldLabel, Form } from '@vritti/quantum-ui/Form';
 import { Button } from '@vritti/quantum-ui/Button';
 import { OTPField } from '@vritti/quantum-ui/OTPField';
 import { PhoneField, isValidPhoneNumber, type PhoneValue } from '@vritti/quantum-ui/PhoneField';
 import { Typography } from '@vritti/quantum-ui/Typography';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, CheckCircle, ChevronRight, Loader2, MessageSquare, Phone, QrCode, Smartphone } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import type { PhoneFormData, OTPFormData } from '../../schemas/auth';
+import { phoneSchema, otpSchema } from '../../schemas/auth';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 import { MultiStepProgressIndicator } from '../../components/onboarding/MultiStepProgressIndicator';
 
 type VerificationMethod = 'whatsapp' | 'sms' | 'manual' | null;
@@ -15,12 +21,22 @@ export const VerifyMobileFlowPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<FlowStep>(1);
   const [selectedMethod, setSelectedMethod] = useState<VerificationMethod>(null);
   const [phoneNumber, setPhoneNumber] = useState<PhoneValue>();
-  const [phoneError, setPhoneError] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpError, setOtpError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showOtpStep, setShowOtpStep] = useState(false);
+
+  const phoneForm = useForm<PhoneFormData>({
+    resolver: zodResolver(phoneSchema),
+    defaultValues: {
+      phoneNumber: '',
+    },
+  });
+
+  const otpForm = useForm<OTPFormData>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      code: '',
+    },
+  });
 
   // TODO: Fetch verification progress from API on mount
   useEffect(() => {
@@ -72,74 +88,56 @@ export const VerifyMobileFlowPage: React.FC = () => {
     setSelectedMethod(null);
     setIsVerifying(false);
     setShowOtpStep(false);
+    phoneForm.reset();
+    otpForm.reset();
     setCurrentStep(1);
   };
 
-  const handleSendOtp = async () => {
-    if (!phoneNumber) {
-      setPhoneError('Mobile number is required');
-      return;
-    }
-
-    if (!isValidPhoneNumber(phoneNumber)) {
-      setPhoneError('Please enter a valid phone number');
-      return;
-    }
-
-    setIsLoading(true);
-    setPhoneError('');
-
+  const handleSendOtp = async (data: PhoneFormData) => {
     try {
       // TODO: Send OTP via API
       // await fetch('/api/onboarding/verify-mobile/send-otp', {
       //   method: 'POST',
-      //   body: JSON.stringify({ phoneNumber })
+      //   body: JSON.stringify({ phoneNumber: data.phoneNumber })
       // });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Sending OTP to:', phoneNumber);
+      console.log('Sending OTP to:', data.phoneNumber);
+      setPhoneNumber(data.phoneNumber as PhoneValue);
       setShowOtpStep(true);
     } catch (error) {
-      setPhoneError('Failed to send code. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to send OTP', error);
+      mapApiErrorsToForm(phoneForm, error);
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (otp.length !== 6) {
-      setOtpError('Please enter the complete 6-digit code');
-      return;
-    }
-
-    setIsLoading(true);
-    setOtpError('');
-
+  const handleVerifyOtp = async (data: OTPFormData) => {
     try {
       // TODO: Verify OTP via API
       // await fetch('/api/onboarding/verify-mobile/verify-otp', {
       //   method: 'POST',
-      //   body: JSON.stringify({ phoneNumber, otp })
+      //   body: JSON.stringify({ phoneNumber, otp: data.code })
       // });
 
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Verifying OTP:', otp);
+      console.log('Verifying OTP:', data.code);
       setCurrentStep(3);
     } catch (error) {
-      setOtpError('Invalid code. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Verification failed', error);
+      mapApiErrorsToForm(otpForm, error);
     }
   };
 
   const handleResendOtp = async () => {
-    setOtpError('');
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log('Resending OTP to:', phoneNumber);
-      setOtp('');
+      otpForm.reset();
     } catch (error) {
-      setOtpError('Failed to resend code. Please try again.');
+      otpForm.setError('root', {
+        type: 'manual',
+        message: 'Failed to resend code. Please try again.',
+      });
     }
   };
 
@@ -384,29 +382,21 @@ export const VerifyMobileFlowPage: React.FC = () => {
             </Typography>
           </div>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendOtp();
-            }}
-            className='space-y-6'
-          >
-            <PhoneField
-              label='Phone Number'
-              value={phoneNumber}
-              onChange={(value) => {
-                setPhoneNumber(value);
-                if (phoneError) setPhoneError('');
-              }}
-              error={!!phoneError}
-              message={phoneError}
-              defaultCountry='IN'
-            />
+          <Form form={phoneForm} onSubmit={handleSendOtp}>
+            <FieldGroup>
+              <PhoneField name='phoneNumber' label='Phone Number' defaultCountry='IN' />
 
-            <Button type='submit' className='w-full bg-primary text-primary-foreground' disabled={isLoading}>
-              {isLoading ? 'Sending Code...' : 'Send Code'}
-            </Button>
-          </form>
+              <Field>
+                <Button
+                  type='submit'
+                  className='w-full bg-primary text-primary-foreground'
+                  disabled={phoneForm.formState.isSubmitting}
+                >
+                  {phoneForm.formState.isSubmitting ? 'Sending Code...' : 'Send Code'}
+                </Button>
+              </Field>
+            </FieldGroup>
+          </Form>
         </div>
       );
     }
@@ -415,7 +405,10 @@ export const VerifyMobileFlowPage: React.FC = () => {
     return (
       <div className='space-y-6'>
         <button
-          onClick={() => setShowOtpStep(false)}
+          onClick={() => {
+            setShowOtpStep(false);
+            otpForm.reset();
+          }}
           className='inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground'
         >
           <ArrowLeft className='h-4 w-4' />
@@ -434,37 +427,54 @@ export const VerifyMobileFlowPage: React.FC = () => {
           </Typography>
         </div>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleVerifyOtp();
-          }}
-          className='space-y-6'
-        >
-          <div className='flex justify-center'>
-            <Smartphone className='h-8 w-8 text-primary' />
-          </div>
+        <Form form={otpForm} onSubmit={handleVerifyOtp}>
+          <FieldGroup>
+            <div className='flex justify-center'>
+              <Smartphone className='h-8 w-8 text-primary' />
+            </div>
 
-          <OTPField
-            value={otp}
-            onChange={setOtp}
-            error={!!otpError}
-            message={otpError || 'Enter the 6-digit code sent via SMS'}
-          />
+            <Field>
+              <FieldLabel className='sr-only'>Verification Code</FieldLabel>
+              <OTPField
+                name='code'
+                onChange={(value) => {
+                  if (value.length === 6) {
+                    otpForm.handleSubmit(handleVerifyOtp)();
+                  }
+                }}
+              />
+              <Typography variant='body2' intent='muted' className='text-center mt-2'>
+                Enter the 6-digit code sent via SMS
+              </Typography>
+            </Field>
 
-          <Button type='submit' className='w-full bg-primary text-primary-foreground' disabled={isLoading}>
-            {isLoading ? 'Verifying...' : 'Verify & Continue'}
-          </Button>
+            <Field>
+              <Button
+                type='submit'
+                className='w-full bg-primary text-primary-foreground'
+                disabled={otpForm.formState.isSubmitting}
+              >
+                {otpForm.formState.isSubmitting ? 'Verifying...' : 'Verify & Continue'}
+              </Button>
+            </Field>
 
-          <div className='flex justify-center gap-4 text-sm'>
-            <button type='button' onClick={() => setShowOtpStep(false)} className='text-primary hover:text-primary/80'>
-              Change number
-            </button>
-            <button type='button' onClick={handleResendOtp} className='text-primary hover:text-primary/80'>
-              Resend code
-            </button>
-          </div>
-        </form>
+            <div className='flex justify-center gap-4 text-sm'>
+              <button
+                type='button'
+                onClick={() => {
+                  setShowOtpStep(false);
+                  otpForm.reset();
+                }}
+                className='text-primary hover:text-primary/80'
+              >
+                Change number
+              </button>
+              <button type='button' onClick={handleResendOtp} className='text-primary hover:text-primary/80'>
+                Resend code
+              </button>
+            </div>
+          </FieldGroup>
+        </Form>
       </div>
     );
   };

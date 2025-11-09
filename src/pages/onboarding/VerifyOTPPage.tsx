@@ -1,43 +1,41 @@
+import { Field, FieldGroup, FieldLabel, Form } from '@vritti/quantum-ui/Form';
 import { Button } from '@vritti/quantum-ui/Button';
-import { Typography } from '@vritti/quantum-ui/Typography';
 import { OTPField } from '@vritti/quantum-ui/OTPField';
 import { Progress } from '@vritti/quantum-ui/Progress';
+import { Typography } from '@vritti/quantum-ui/Typography';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Smartphone } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import type { OTPFormData } from '../../schemas/auth';
+import { otpSchema } from '../../schemas/auth';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const VerifyOTPPage: React.FC = () => {
   const navigate = useNavigate();
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<OTPFormData>({
+    resolver: zodResolver(otpSchema),
+    defaultValues: {
+      code: '',
+    },
+  });
 
-    if (otp.length !== 6) {
-      setError('Please enter the complete 6-digit code');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
+  const onSubmit = async (data: OTPFormData) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Verifying OTP:', otp);
+      console.log('Verifying OTP:', data.code);
       navigate('/onboarding/set-password');
     } catch (error) {
-      setError('Invalid code. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to verify OTP', error);
+      mapApiErrorsToForm(form, error);
     }
   };
 
   const handleResend = () => {
     console.log('Resending OTP');
-    setOtp('');
-    setError('');
+    form.reset();
   };
 
   return (
@@ -53,35 +51,51 @@ export const VerifyOTPPage: React.FC = () => {
         </Typography>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex justify-center">
-          <Smartphone className="h-8 w-8 text-primary" />
-        </div>
+      <Form form={form} onSubmit={onSubmit}>
+        <FieldGroup>
+          <div className="flex justify-center">
+            <Smartphone className="h-8 w-8 text-primary" />
+          </div>
 
-        <OTPField
-          value={otp}
-          onChange={setOtp}
-          error={!!error}
-          message={error || 'Enter the 6-digit code sent via SMS'}
-        />
+          <Field>
+            <FieldLabel className="sr-only">Verification Code</FieldLabel>
+            <OTPField
+              name="code"
+              onChange={(value) => {
+                if (value.length === 6) {
+                  form.handleSubmit(onSubmit)();
+                }
+              }}
+            />
+            <Typography variant="body2" intent="muted" className="text-center mt-2">
+              Enter the 6-digit code sent via SMS
+            </Typography>
+          </Field>
 
-        <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={isLoading}>
-          {isLoading ? 'Verifying...' : 'Verify & Continue'}
-        </Button>
+          <Field>
+            <Button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Verifying...' : 'Verify & Continue'}
+            </Button>
+          </Field>
 
-        <div className="flex justify-center gap-4 text-sm">
-          <button
-            type="button"
-            onClick={() => navigate('/onboarding/mobile')}
-            className="text-primary hover:text-primary/80"
-          >
-            Change number
-          </button>
-          <button type="button" onClick={handleResend} className="text-primary hover:text-primary/80">
-            Resend code
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-center gap-4 text-sm">
+            <button
+              type="button"
+              onClick={() => navigate('/onboarding/mobile')}
+              className="text-primary hover:text-primary/80"
+            >
+              Change number
+            </button>
+            <button type="button" onClick={handleResend} className="text-primary hover:text-primary/80">
+              Resend code
+            </button>
+          </div>
+        </FieldGroup>
+      </Form>
     </div>
   );
 };
