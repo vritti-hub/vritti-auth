@@ -382,7 +382,7 @@ export const VerifyMobileFlowPage: React.FC = () => {
             </Typography>
           </div>
 
-          <Form form={phoneForm} onSubmit={handleSendOtp}>
+          <Form form={phoneForm} onSubmit={handleSendOtp} csrfEndpoint="/csrf/token">
             <FieldGroup>
               <PhoneField name='phoneNumber' label='Phone Number' defaultCountry='IN' />
 
@@ -427,7 +427,7 @@ export const VerifyMobileFlowPage: React.FC = () => {
           </Typography>
         </div>
 
-        <Form form={otpForm} onSubmit={handleVerifyOtp}>
+        <Form form={otpForm} onSubmit={handleVerifyOtp} csrfEndpoint="/csrf/token">
           <FieldGroup>
             <div className='flex justify-center'>
               <Smartphone className='h-8 w-8 text-primary' />

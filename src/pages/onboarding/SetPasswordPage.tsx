@@ -57,7 +57,7 @@ export const SetPasswordPage: React.FC = () => {
         </Typography>
       </div>
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={onSubmit} csrfEndpoint="/csrf/token">
         <FieldGroup>
           <PasswordField
             name="password"

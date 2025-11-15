@@ -1,14 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
 import '@vritti/quantum-ui/index.css';
-import './index.css';
+import { configureQuantumUI } from '@vritti/quantum-ui';
+import ReactDOM from 'react-dom/client';
 import App from './App';
+import quantumUIConfig from '../quantum-ui.config';
+import './index.css';
+
+// Initialize quantum-ui configuration
+configureQuantumUI(quantumUIConfig);
+
 const rootEl = document.getElementById('root');
 if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
-    <React.StrictMode>
+
       <App />
-    </React.StrictMode>
+
   );
 }

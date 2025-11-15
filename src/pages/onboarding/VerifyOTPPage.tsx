@@ -51,7 +51,7 @@ export const VerifyOTPPage: React.FC = () => {
         </Typography>
       </div>
 
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={onSubmit} csrfEndpoint="/csrf/token">
         <FieldGroup>
           <div className="flex justify-center">
             <Smartphone className="h-8 w-8 text-primary" />

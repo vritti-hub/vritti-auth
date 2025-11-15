@@ -49,7 +49,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Form */}
-      <Form form={form} onSubmit={onSubmit}>
+      <Form form={form} onSubmit={onSubmit} csrfEndpoint="/csrf/token">
         <FieldGroup>
           <TextField
             name='email'

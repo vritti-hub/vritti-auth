@@ -70,14 +70,23 @@ const SocialButton: React.FC<SocialButtonProps> = ({ provider, onClick }) => {
 };
 
 export const SocialAuthButtons: React.FC = () => {
+  const handleGoogleLogin = () => {
+    // Get API URL from environment variable
+    const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+    // Redirect to backend OAuth endpoint
+    // Backend will redirect to Google, then back to our success/error pages
+    window.location.href = `${apiUrl}/onboarding/oauth/google`;
+  };
+
   const handleSocialLogin = (provider: string) => {
     console.log(`Login with ${provider}`);
-    // TODO: Implement OAuth flow
+    // TODO: Implement OAuth flow for other providers
   };
 
   return (
     <div className="flex gap-3 w-full justify-center">
-      <SocialButton provider="google" onClick={() => handleSocialLogin('google')} />
+      <SocialButton provider="google" onClick={handleGoogleLogin} />
       <SocialButton provider="x" onClick={() => handleSocialLogin('x')} />
       <SocialButton provider="facebook" onClick={() => handleSocialLogin('facebook')} />
       <SocialButton provider="apple" onClick={() => handleSocialLogin('apple')} />

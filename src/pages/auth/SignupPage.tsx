@@ -1,21 +1,23 @@
-import { Field, FieldGroup, Form } from '@vritti/quantum-ui/Form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { setToken } from '@vritti/quantum-ui';
 import { Button } from '@vritti/quantum-ui/Button';
+import { Field, FieldGroup, Form } from '@vritti/quantum-ui/Form';
 import { PasswordField } from '@vritti/quantum-ui/PasswordField';
 import { TextField } from '@vritti/quantum-ui/TextField';
 import { Typography } from '@vritti/quantum-ui/Typography';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, Mail, User } from 'lucide-react';
 import React from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import type { SignupFormData } from '../../schemas/auth';
-import { signupSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthDivider } from '../../components/auth/AuthDivider';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import type { SignupFormData } from '../../schemas/auth';
+import { signupSchema } from '../../schemas/auth';
+import { register } from '../../services/onboarding.service';
+import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const SignupPage: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -31,12 +33,20 @@ export const SignupPage: React.FC = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      // TODO: Implement API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Signup successful', data);
-      // navigate('/onboarding/mobile');
+      const response = await register({
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
+
+      // Store onboarding token for subsequent requests
+      setToken('onboarding', response.onboardingToken);
+
+      // Navigate to email verification
+      navigate('/onboarding/verify-email');
     } catch (error) {
-      console.error('Signup failed', error);
+      // Map API errors to form fields
       mapApiErrorsToForm(form, error);
     }
   };

@@ -1,12 +1,14 @@
 import { OnboardingProvider } from "@vritti/quantum-ui";
 import type { RouteObject } from "react-router-dom";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { AuthLayout } from "./components/layouts/AuthLayout";
 import './index.css';
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { SignupPage } from "./pages/auth/SignupPage";
 import { MFASetupFlowPage } from "./pages/onboarding/MFASetupFlowPage";
+import { OAuthErrorPage } from "./pages/onboarding/OAuthErrorPage";
+import { OAuthSuccessPage } from "./pages/onboarding/OAuthSuccessPage";
 import { SetPasswordPage } from "./pages/onboarding/SetPasswordPage";
 import { VerifyEmailPage } from "./pages/onboarding/VerifyEmailPage";
 import { VerifyMobileFlowPage } from "./pages/onboarding/VerifyMobileFlowPage";
@@ -41,10 +43,18 @@ export const authRoutes: RouteObject[] = [
 				path: "onboarding",
 				element: (
 					<OnboardingProvider>
-						<div />
+						<Outlet />
 					</OnboardingProvider>
 				),
 				children: [
+					{
+						path: "oauth-success",
+						element: <OAuthSuccessPage />,
+					},
+					{
+						path: "oauth-error",
+						element: <OAuthErrorPage />,
+					},
 					{
 						path: "verify-email",
 						element: <VerifyEmailPage />,
