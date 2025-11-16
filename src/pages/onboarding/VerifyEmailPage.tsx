@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import type { OTPFormData } from '../../schemas/auth';
 import { otpSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm, getRootError } from '../../utils/formHelpers';
 import { MultiStepProgressIndicator } from '../../components/onboarding/MultiStepProgressIndicator';
 import { verifyEmail, resendEmailOtp } from '../../services/onboarding.service';
 
@@ -43,43 +42,27 @@ export const VerifyEmailPage: React.FC = () => {
   }, [currentStep, onboardingLoading, navigate]);
 
   const onSubmit = async (data: OTPFormData) => {
-    try {
-      await verifyEmail(data.code);
-      // OnboardingProvider will auto-refresh status and navigate via useEffect
-    } catch (error) {
-      console.error('Verification failed', error);
-      mapApiErrorsToForm(form, error);
-    }
+    await verifyEmail(data.code);
+    // OnboardingProvider will auto-refresh status and navigate via useEffect
   };
 
   const handleResend = async () => {
-    try {
-      setIsResending(true);
-      setResendSuccess(false);
-      form.clearErrors();
+    setIsResending(true);
+    setResendSuccess(false);
+    form.clearErrors();
 
-      await resendEmailOtp();
+    await resendEmailOtp();
 
-      // Show success message
-      setResendSuccess(true);
+    // Show success message
+    setResendSuccess(true);
 
-      // Reset OTP field
-      form.reset();
+    // Reset OTP field
+    form.reset();
 
-      // Clear success message after 3 seconds
-      setTimeout(() => setResendSuccess(false), 3000);
-    } catch (error) {
-      console.error('Failed to resend code', error);
-      form.setError('root', {
-        type: 'manual',
-        message: 'Failed to resend code. Please try again.',
-      });
-    } finally {
-      setIsResending(false);
-    }
+    // Clear success message after 3 seconds
+    setTimeout(() => setResendSuccess(false), 3000);
+    setIsResending(false);
   };
-
-  const rootError = getRootError(form);
 
   return (
     <div className="space-y-6">
@@ -113,15 +96,6 @@ export const VerifyEmailPage: React.FC = () => {
             <div className="rounded-md bg-green-50 p-4 border border-green-200">
               <Typography variant="body2" className="text-green-800 text-center">
                 Verification code resent successfully. Check your email.
-              </Typography>
-            </div>
-          )}
-
-          {/* Error message */}
-          {rootError && (
-            <div className="rounded-md bg-red-50 p-4 border border-red-200">
-              <Typography variant="body2" className="text-red-800 text-center">
-                {rootError}
               </Typography>
             </div>
           )}

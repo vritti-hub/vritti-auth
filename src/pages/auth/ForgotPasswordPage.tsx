@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import type { ForgotPasswordFormData } from '../../schemas/auth';
 import { forgotPasswordSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,16 +23,11 @@ export const ForgotPasswordPage: React.FC = () => {
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
-    try {
-      // TODO: Implement API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Password reset email sent to:', data.email);
-      setSubmittedEmail(data.email);
-      setIsSuccess(true);
-    } catch (error) {
-      console.error('Failed to send reset email', error);
-      mapApiErrorsToForm(form, error);
-    }
+    // TODO: Implement API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log('Password reset email sent to:', data.email);
+    setSubmittedEmail(data.email);
+    setIsSuccess(true);
   };
 
   if (isSuccess) {

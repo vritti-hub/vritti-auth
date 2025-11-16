@@ -10,7 +10,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import type { SetPasswordFormData } from '../../schemas/auth';
 import { setPasswordSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const SetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -34,14 +33,9 @@ export const SetPasswordPage: React.FC = () => {
   ];
 
   const onSubmit = async (data: SetPasswordFormData) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Password set successfully');
-      navigate('/onboarding/mfa-selection');
-    } catch (error) {
-      console.error('Failed to set password', error);
-      mapApiErrorsToForm(form, error);
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('Password set successfully');
+    navigate('/onboarding/mfa-selection');
   };
 
   return (

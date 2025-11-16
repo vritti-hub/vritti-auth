@@ -14,7 +14,6 @@ import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import type { SignupFormData } from '../../schemas/auth';
 import { signupSchema } from '../../schemas/auth';
 import { register } from '../../services/onboarding.service';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,23 +31,20 @@ export const SignupPage: React.FC = () => {
   const password = useWatch({ control: form.control, name: 'password' }) || '';
 
   const onSubmit = async (data: SignupFormData) => {
-    try {
-      const response = await register({
-        email: data.email,
-        password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
-      });
+    const response = await register({
+      email: data.email,
+      password: data.password,
+      firstName: data.firstName,
+      lastName: data.lastName,
+    });
 
-      // Store onboarding token for subsequent requests
-      setToken('onboarding', response.onboardingToken);
+    // Store onboarding token for subsequent requests
+    setToken('onboarding', response.onboardingToken);
 
-      // Navigate to email verification
-      navigate('/onboarding/verify-email');
-    } catch (error) {
-      // Map API errors to form fields
-      mapApiErrorsToForm(form, error);
-    }
+    // Navigate to email verification
+    navigate('/onboarding/verify-email');
+
+
   };
 
   return (

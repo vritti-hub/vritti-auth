@@ -1082,10 +1082,10 @@
   resolved "https://registry.npmjs.org/@types/semver/-/semver-7.5.8.tgz"
   integrity sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==
 
-"@vritti/quantum-ui@0.1.20":
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/@vritti/quantum-ui/-/quantum-ui-0.1.20.tgz#b29313620882bd66067293a48c04bb5c4954e803"
-  integrity sha512-L9aBHv9+gi6XKDMx83oDAtqzZ91fuBBEPWrpvcUUaGxfkzQZXJbZwpkDHR7MNSsRJxN5p5YcyumKCoF/q9kMNg==
+"@vritti/quantum-ui@0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@vritti/quantum-ui/-/quantum-ui-0.1.21.tgz#dd1a9ce11f6beb55a058a4897876cc51f1a16f45"
+  integrity sha512-Yu4drStkEwCCEp0Pe4ZvkPvsfKcIFEhld4HnP8sNki2XX4Xr5S7TNzLEK1SCP5ja4jnO9Fia9Kn5mYH73pRO+g==
   dependencies:
     "@hookform/resolvers" "^5.2.2"
     "@radix-ui/react-checkbox" "^1.3.3"

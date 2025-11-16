@@ -10,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import type { PhoneFormData, OTPFormData } from '../../schemas/auth';
 import { phoneSchema, otpSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 import { MultiStepProgressIndicator } from '../../components/onboarding/MultiStepProgressIndicator';
 
 type VerificationMethod = 'whatsapp' | 'sms' | 'manual' | null;
@@ -94,51 +93,34 @@ export const VerifyMobileFlowPage: React.FC = () => {
   };
 
   const handleSendOtp = async (data: PhoneFormData) => {
-    try {
-      // TODO: Send OTP via API
-      // await fetch('/api/onboarding/verify-mobile/send-otp', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ phoneNumber: data.phoneNumber })
-      // });
+    // TODO: Send OTP via API
+    // await fetch('/api/onboarding/verify-mobile/send-otp', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ phoneNumber: data.phoneNumber })
+    // });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Sending OTP to:', data.phoneNumber);
-      setPhoneNumber(data.phoneNumber as PhoneValue);
-      setShowOtpStep(true);
-    } catch (error) {
-      console.error('Failed to send OTP', error);
-      mapApiErrorsToForm(phoneForm, error);
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('Sending OTP to:', data.phoneNumber);
+    setPhoneNumber(data.phoneNumber as PhoneValue);
+    setShowOtpStep(true);
   };
 
   const handleVerifyOtp = async (data: OTPFormData) => {
-    try {
-      // TODO: Verify OTP via API
-      // await fetch('/api/onboarding/verify-mobile/verify-otp', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ phoneNumber, otp: data.code })
-      // });
+    // TODO: Verify OTP via API
+    // await fetch('/api/onboarding/verify-mobile/verify-otp', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ phoneNumber, otp: data.code })
+    // });
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Verifying OTP:', data.code);
-      setCurrentStep(3);
-    } catch (error) {
-      console.error('Verification failed', error);
-      mapApiErrorsToForm(otpForm, error);
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log('Verifying OTP:', data.code);
+    setCurrentStep(3);
   };
 
   const handleResendOtp = async () => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Resending OTP to:', phoneNumber);
-      otpForm.reset();
-    } catch (error) {
-      otpForm.setError('root', {
-        type: 'manual',
-        message: 'Failed to resend code. Please try again.',
-      });
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('Resending OTP to:', phoneNumber);
+    otpForm.reset();
   };
 
   const handleContinue = () => {

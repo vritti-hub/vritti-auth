@@ -10,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import type { OTPFormData } from '../../schemas/auth';
 import { otpSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const VerifyOTPPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,14 +22,9 @@ export const VerifyOTPPage: React.FC = () => {
   });
 
   const onSubmit = async (data: OTPFormData) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Verifying OTP:', data.code);
-      navigate('/onboarding/set-password');
-    } catch (error) {
-      console.error('Failed to verify OTP', error);
-      mapApiErrorsToForm(form, error);
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('Verifying OTP:', data.code);
+    navigate('/onboarding/set-password');
   };
 
   const handleResend = () => {

@@ -12,7 +12,6 @@ import { AuthDivider } from '../../components/auth/AuthDivider';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import type { LoginFormData } from '../../schemas/auth';
 import { loginSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 
 export const LoginPage: React.FC = () => {
   // const navigate = useNavigate();
@@ -25,15 +24,10 @@ export const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      // TODO: Implement API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Login successful', data);
-      // navigate('/dashboard');
-    } catch (error) {
-      console.error('Login failed', error);
-      mapApiErrorsToForm(form, error);
-    }
+    // TODO: Implement API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log('Login successful', data);
+    // navigate('/dashboard');
   };
 
   return (

@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import type { OTPFormData } from '../../schemas/auth';
 import { otpSchema } from '../../schemas/auth';
-import { mapApiErrorsToForm } from '../../utils/formHelpers';
 import { MultiStepProgressIndicator } from '../../components/onboarding/MultiStepProgressIndicator';
 
 type MFAMethod = 'authenticator' | 'passkey' | null;
@@ -82,22 +81,17 @@ export const MFASetupFlowPage: React.FC = () => {
   };
 
   const handleAuthenticatorSubmit = async (data: OTPFormData) => {
-    try {
-      // TODO: Verify OTP with API
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Authenticator verified with OTP:', data.code);
+    // TODO: Verify OTP with API
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log('Authenticator verified with OTP:', data.code);
 
-      // TODO: Update API
-      // await fetch('/api/onboarding/progress', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ mfaStep: 3, mfaMethod: 'authenticator' })
-      // });
+    // TODO: Update API
+    // await fetch('/api/onboarding/progress', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ mfaStep: 3, mfaMethod: 'authenticator' })
+    // });
 
-      setCurrentStep(3);
-    } catch (error) {
-      console.error('Verification failed', error);
-      mapApiErrorsToForm(otpForm, error);
-    }
+    setCurrentStep(3);
   };
 
   const [isCreatingPasskey, setIsCreatingPasskey] = useState(false);
@@ -105,23 +99,18 @@ export const MFASetupFlowPage: React.FC = () => {
   const handlePasskeySubmit = async () => {
     setIsCreatingPasskey(true);
 
-    try {
-      // TODO: Implement WebAuthn passkey creation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Passkey created successfully');
+    // TODO: Implement WebAuthn passkey creation
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log('Passkey created successfully');
 
-      // TODO: Update API
-      // await fetch('/api/onboarding/progress', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ mfaStep: 3, mfaMethod: 'passkey' })
-      // });
+    // TODO: Update API
+    // await fetch('/api/onboarding/progress', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ mfaStep: 3, mfaMethod: 'passkey' })
+    // });
 
-      setCurrentStep(3);
-    } catch (error) {
-      console.error('Failed to create passkey', error);
-    } finally {
-      setIsCreatingPasskey(false);
-    }
+    setCurrentStep(3);
+    setIsCreatingPasskey(false);
   };
 
   // Step 1: MFA Selection
